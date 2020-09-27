@@ -21,6 +21,8 @@
     "@vue/cli-plugin-eslint": "^4.5.0",
     "@vue/cli-service": "^4.5.0",
     "babel-eslint": "^10.1.0",
+    "chimee": "^0.12.0",
+    "chimee-plugin-popup": "0.0.8",
     "electron": "8.0.0",
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^6.7.2",
