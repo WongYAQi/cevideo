@@ -1,10 +1,13 @@
 <template>
   <div id="app">
-    <button @click='createWindow'>进程通信</button>
+    <div id='wrapper' />
   </div>
 </template>
 
 <script>
+import Chimee from 'chimee'
+import ChimeePluginControl from 'chimee-plugin-controlbar'
+import ChimeePluginPopup from 'chimee-plugin-popup'
 const { ipcRenderer } = require('electron')
 export default {
   name: 'App',
@@ -16,7 +19,28 @@ export default {
      * 通过 ipcRenderer 发送消息到主进程，所以在渲染进程的调试窗口是看不到消息的，只有在主进程的node窗口中才可以看到
      */
   },
+  mounted () {
+    this.init()
+  },
   methods: {
+    init () {
+      console.log(ChimeePluginControl, ChimeePluginPopup)
+      Chimee.install(ChimeePluginControl)
+      // Chimee.install(ChimeePluginPopup({
+      //   name: 'cc_popup',
+      //   title: '这是一个居中信息框',
+      //   body: '这里是信息内容',
+      //   offset: '50% 50%',
+      //   width: '200px'
+      // }))
+      const chimee = new Chimee({
+        wrapper: '#wrapper',
+        src: 'http://cdn.toxicjohann.com/lostStar.mp4',
+        controls: true,
+        autoplay: true,
+        plugin: [ChimeePluginControl.name]
+      })
+    },
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
     }
