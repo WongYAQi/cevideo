@@ -3,6 +3,7 @@
 import { app, protocol, BrowserWindow, ipcMain } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import IpcInit from './background/index'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -17,8 +18,9 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 410,
+    height: 400,
+    frame: false,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -41,7 +43,7 @@ function createWindow() {
   })
 }
 
-// Quit when all windows are closed.
+// Quit when all windows are closed
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
@@ -72,10 +74,7 @@ app.on('ready', async () => {
   //   }
   // }
   createWindow()
-  ipcMain.on('msg_render2main', (event, ...params) => {
-    console.log(event)
-    console.log(params)
-  })
+  IpcInit(win)
 })
 
 // Exit cleanly on request from parent process in development mode.
