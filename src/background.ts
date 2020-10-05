@@ -8,7 +8,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win: BrowserWindow | null
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -74,7 +74,7 @@ app.on('ready', async () => {
   //   }
   // }
   createWindow()
-  IpcInit(win)
+  if (win) IpcInit(win)
 })
 
 // Exit cleanly on request from parent process in development mode.

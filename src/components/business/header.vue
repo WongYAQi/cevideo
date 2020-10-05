@@ -1,25 +1,48 @@
 <template>
-  <div class='header'>
-    <div class='logo'>
+  <div class="header">
+    <div class="logo controlbar-container">
       <span>Potplayer</span>
-      <i class='fa fa-chevron-down' />
+      <i class="fa fa-chevron-down" />
     </div>
-    <div class='title' />
-    <div class='bargroup' @click='handleTitleBar'>
+    <div class="title controlbar-container" />
+    <div
+      class="bargroup controlbar-container"
+      @click="handleTitleBar"
+    >
       <div>
-        <i class='fa fa-thumb-tack' title='置顶' data-click='top' />
+        <i
+          class="fa fa-thumb-tack"
+          title="置顶"
+          data-click="top"
+        />
       </div>
       <div>
-        <i class='fa fa-window-minimize' title='最小化' data-click='mini' />
+        <i
+          class="fa fa-window-minimize"
+          title="最小化"
+          data-click="mini"
+        />
       </div>
       <div>
-        <i class='fa fa-window-maximize' title='最大化' :data-click='isMaximize? "unmax" : "max"' />
+        <i
+          class="fa fa-window-maximize"
+          title="最大化"
+          :data-click="isMaximize? &quot;unmax&quot; : &quot;max&quot;"
+        />
       </div>
       <div>
-        <i class='fa fa-arrows-alt' title='全屏' data-click='full' />
+        <i
+          class="fa fa-arrows-alt"
+          title="全屏"
+          data-click="full"
+        />
       </div>
       <div>
-        <i class='fa fa-close' title='关闭' data-click='close' />
+        <i
+          class="fa fa-close"
+          title="关闭"
+          data-click="close"
+        />
       </div>
     </div>
   </div>
@@ -42,17 +65,18 @@ export default {
       isMaximize: false
     }
   },
+  mounted () {
+    ipcRenderer.on('TitleBar', (event, arg) => {
+      console.log(arg)
+      this.isMaximize = arg === 'maximize'
+    })
+  },
   methods: {
     handleTitleBar (event) {
       let type = event.target.getAttribute('data-click')
       let types = ['top', 'mini', 'max', 'unmax', 'full', 'close']
       if (types.includes(type)){
         ipcRenderer.send('TitleBar', type)
-      }
-      if (type === 'max') {
-        this.isMaximize = true
-      } else if (type === 'unmax') {
-        this.isMaximize = false
       }
     }
   }
@@ -66,33 +90,28 @@ export default {
   width: 100%;
   height: 31px;
   display: flex;
+  .controlbar-container{
+    height: 31px;
+    line-height: 31px;
+  }
   .logo{
     -webkit-app-region: no-drag;
     width: 90px;
     flex: 0 1 auto;
-    border: 1px solid #000;
-    line-height: 31px;
     font-size: 12px;
   }
   .title{
     flex: 1;
-    border: 1px solid #000;
   }
   .bargroup{
     flex: 0 1 auto;
     -webkit-app-region: no-drag;
   }
   .bargroup{
-    border: 1px solid #000;
     & > div{
       display: inline-block;
-      width: 25px;
-      height: 25px;
+      margin: 0 10px;
       i{
-        position: relative;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 12px;
         color: #767676;
         &:hover{
           color: #FAE100;

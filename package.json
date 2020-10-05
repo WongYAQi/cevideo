@@ -47,14 +47,19 @@
       "node": true
     },
     "extends": [
-      "plugin:vue/essential",
+      "plugin:vue/strongly-recommended",
       "eslint:recommended",
       "@vue/typescript"
     ],
     "parserOptions": {
       "parser": "@typescript-eslint/parser"
     },
-    "rules": {}
+    "rules": {
+      "indent": [
+        "error",
+        2
+      ]
+    }
   },
   "browserslist": [
     "> 1%",

@@ -7,10 +7,10 @@
 </template>
 
 <script>
-import MyHeader from './components/header'
-import MyPlayer from './components/player'
-import MyFooter from './components/footer'
-const { ipcRenderer } = require('electron')
+import MyHeader from './components/business/header'
+import MyPlayer from './components/business/player'
+import MyFooter from './components/business/footer'
+const { ipcRenderer, webFrame } = require('electron')
 export default {
   name: 'App',
   components: {
@@ -23,6 +23,9 @@ export default {
      * 第二种方式是 ipcRender ，管道通信
      * 通过 ipcRenderer 发送消息到主进程，所以在渲染进程的调试窗口是看不到消息的，只有在主进程的node窗口中才可以看到
      */
+  },
+  mounted () {
+    console.log(webFrame)
   },
   methods: {
     createWindow () {
@@ -38,8 +41,8 @@ html, body{
   padding: 0;
 }
 #app {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
