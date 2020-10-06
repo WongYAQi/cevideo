@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div class="logo controlbar-container">
+    <div class="logo controlbar-container c-f">
       <span>Potplayer</span>
       <i class="fa fa-chevron-down" />
     </div>
@@ -11,35 +11,35 @@
     >
       <div>
         <i
-          class="fa fa-thumb-tack"
+          class="fa fa-thumb-tack c-i"
           title="置顶"
           data-click="top"
         />
       </div>
       <div>
         <i
-          class="fa fa-window-minimize"
+          class="fa fa-window-minimize c-i"
           title="最小化"
           data-click="mini"
         />
       </div>
       <div>
         <i
-          class="fa fa-window-maximize"
+          class="fa fa-window-maximize c-i"
           title="最大化"
           :data-click="isMaximize? &quot;unmax&quot; : &quot;max&quot;"
         />
       </div>
       <div>
         <i
-          class="fa fa-arrows-alt"
+          class="fa fa-arrows-alt c-i"
           title="全屏"
           data-click="full"
         />
       </div>
       <div>
         <i
-          class="fa fa-close"
+          class="fa fa-close c-i"
           title="关闭"
           data-click="close"
         />
@@ -111,13 +111,6 @@ export default {
     & > div{
       display: inline-block;
       margin: 0 10px;
-      i{
-        color: #767676;
-        &:hover{
-          color: #FAE100;
-          cursor: pointer;
-        }
-      }
     }
   }
 }

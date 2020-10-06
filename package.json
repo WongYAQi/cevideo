@@ -13,15 +13,20 @@
   },
   "main": "background.js",
   "dependencies": {
+    "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
     "font-awesome": "^4.7.0",
     "less": "^3.12.2",
     "less-loader": "^7.0.1",
+    "mime": "^2.4.6",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2"
   },
   "devDependencies": {
+    "@types/express": "^4.17.8",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
     "@vue/cli-plugin-babel": "^4.5.0",

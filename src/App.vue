@@ -1,8 +1,15 @@
 <template>
   <div id="app">
     <my-header />
-    <my-player />
-    <my-footer />
+    <my-player
+      :id="id"
+      :chimee.sync="chimee"
+      ref="play"
+    />
+    <my-footer 
+      @cevideo-load="load"
+      @cevideo-play="play"
+    />
   </div>
 </template>
 
@@ -10,11 +17,17 @@
 import MyHeader from './components/business/header'
 import MyPlayer from './components/business/player'
 import MyFooter from './components/business/footer'
-const { ipcRenderer, webFrame } = require('electron')
+import { ipcRenderer } from 'electron'
 export default {
   name: 'App',
   components: {
     MyHeader, MyPlayer, MyFooter
+  },
+  data () {
+    return {
+      chimee: '',
+      id: 'player'
+    }
   },
   created () {
     // 主进程与渲染进程之间的通信
@@ -24,12 +37,15 @@ export default {
      * 通过 ipcRenderer 发送消息到主进程，所以在渲染进程的调试窗口是看不到消息的，只有在主进程的node窗口中才可以看到
      */
   },
-  mounted () {
-    console.log(webFrame)
-  },
   methods: {
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
+    },
+    load (paths) {
+      this.chimee.load('http://localhost:3000/load?src=' + encodeURIComponent(paths[0]))
+    },
+    play () {
+      this.chimee.play()
     }
   }
 }
