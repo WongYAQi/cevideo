@@ -1,9 +1,16 @@
 <template>
   <div class="footer">
     <div class="row">
-      <div class="cevideo-progress-wrap" />
-      <div class="cevideo-volumn-wrap">
-        <i class="fa fa-volume-up" />
+      <div>
+        <ce-progress />
+      </div>
+      <div>
+        <div class="volumn">
+          <i class="fa fa-volume-up c-i" />
+        </div>
+        <div class="progress">
+          <ce-progress />
+        </div>
       </div>
     </div>
     <div
@@ -12,18 +19,23 @@
     >
       <div
         class="controlbar-container"
-        data-click="play"
+        :data-click="isPlaying ? 'pause' : 'play'"
       >
         <i
-          class="fa fa-play c-f"
+          class="fa c-f"
+          :class="isPlaying ? 'fa-pause' : 'fa-play'"
           title="播放"
-          data-click="play"
+          :data-click="isPlaying ? 'pause' : 'play'"
         />
       </div>
-      <div class="controlbar-container">
+      <div
+        class="controlbar-container"
+        ata-click="stop"
+      >
         <i
           class="fa fa-stop c-f"
           title="停止"
+          data-click="stop"
         />
       </div>
       <div class="controlbar-container">
@@ -63,35 +75,39 @@
 
 <script>
 import electron from 'electron'
+import CeProgress from '../base/progressbar'
 const { dialog, app } = electron.remote
 /**
  * 底部菜单栏，控制板等等
  */
 export default {
+  components: {
+    CeProgress
+  },
+  props: {
+    chimee: Object,
+    isPlaying: Boolean
+  },
   methods: {
     handleFooterBarClick (event) {
       let type = event.target.getAttribute('data-click')
       if (type) {
         if (type === 'open') this.handleOpenNewFile()
         else if (type === 'play') this.handlePlay()
+        else if (type === 'pause') this.handlePlay()
       }
     },
     handlePlay () {
-      this.$emit('cevideo-play')
+      if (this.isPlaying) this.chimee.pause()
+      else this.chimee.play()
     },
     async handleOpenNewFile () {
-      // let input = document.createElement('input')
-      // input.setAttribute('type', 'file')
-      // input.addEventListener('input', event => {
-      //   this.$emit('cevideo-load', input.files)
-      // })
-      // input.click()
       let { filePaths } = await dialog.showOpenDialog({
         title: '这里应该显示当前播放的文件名',
         buttonLabel: '打开',
         defaultPath: 'D:\\', // 默认展示的路径名称是当前文件的路径
         filters: [
-          { name: '支持的全部文件', extensions: ["mp4", 'mkv', 'avi', 'wmv'] }
+          { name: '支持的全部文件', extensions: ["mp4", 'avi'] }
         ]
       })
       if (filePaths.length) {
@@ -109,6 +125,26 @@ export default {
   background-color: rgb(21, 21, 21);
   .row:nth-of-type(1){
     height: 22px;
+    display: flex;
+    line-height: 22px;
+    padding: 0 10px;
+    & > div:nth-of-type(1){
+      flex: 1;
+    }
+    & > div:nth-of-type(2){
+      flex: 0 1 auto;
+      position: relative;
+      width: 120px;
+      margin-left: 10px;
+      display: flex;
+      .volumn{
+        flex: 0 1 auto;
+      }
+      .progress{
+        flex: 1;
+        margin-left: 10px;
+      }
+    }
   }
   .row:nth-of-type(2){
     height: 40px;

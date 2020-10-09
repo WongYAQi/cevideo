@@ -7,6 +7,8 @@
       ref="play"
     />
     <my-footer 
+      :chimee="chimee"
+      :is-playing="isPlaying"
       @cevideo-load="load"
       @cevideo-play="play"
     />
@@ -18,6 +20,7 @@ import MyHeader from './components/business/header'
 import MyPlayer from './components/business/player'
 import MyFooter from './components/business/footer'
 import { ipcRenderer } from 'electron'
+import axios from './script/axios'
 export default {
   name: 'App',
   components: {
@@ -25,8 +28,9 @@ export default {
   },
   data () {
     return {
-      chimee: '',
-      id: 'player'
+      chimee: {},
+      id: 'player',
+      isPlaying: false
     }
   },
   created () {
@@ -37,12 +41,26 @@ export default {
      * 通过 ipcRenderer 发送消息到主进程，所以在渲染进程的调试窗口是看不到消息的，只有在主进程的node窗口中才可以看到
      */
   },
+  watch: {
+    chimee (val) {
+      if (val) {
+        val.on('play', evt => {
+          this.isPlaying = true
+        })
+        val.on('pause', evt => {
+          this.isPlaying = false
+        })
+      }
+    }
+  },
   methods: {
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
     },
     load (paths) {
-      this.chimee.load('http://localhost:3000/load?src=' + encodeURIComponent(paths[0]))
+      let url = encodeURIComponent(paths[0])
+      axios.get('http://localhost:3000/info?src=' + url)
+      this.chimee.load('http://localhost:3000/load?src=' + url)
     },
     play () {
       this.chimee.play()
