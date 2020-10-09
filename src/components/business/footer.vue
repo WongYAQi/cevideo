@@ -9,7 +9,7 @@
           <i class="fa fa-volume-up c-i" />
         </div>
         <div class="progress">
-          <ce-progress />
+          <ce-progress @click="handleClickVolume" />
         </div>
       </div>
     </div>
@@ -113,6 +113,9 @@ export default {
       if (filePaths.length) {
         this.$emit('cevideo-load', filePaths)
       }
+    },
+    handleClickVolume (val) {
+      this.chimee.volume = val / 100
     }
   }
 }

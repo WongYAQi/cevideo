@@ -60,7 +60,9 @@ export default {
     load (paths) {
       let url = encodeURIComponent(paths[0])
       axios.get('http://localhost:3000/info?src=' + url)
-      this.chimee.load('http://localhost:3000/load?src=' + url)
+      this.chimee.load('http://localhost:3000/load?src=' + url, {
+        volume: 0.5
+      })
     },
     play () {
       this.chimee.play()
