@@ -2,14 +2,14 @@
   <div class="footer">
     <div class="row">
       <div>
-        <ce-progress />
+        <ce-progress v-model='progressTime' />
       </div>
       <div>
         <div class="volumn">
           <i class="fa fa-volume-up c-i" />
         </div>
         <div class="progress">
-          <ce-progress @click="handleClickVolume" />
+          <ce-progress v-model='progressVolume' @click="handleClickVolume" />
         </div>
       </div>
     </div>
@@ -38,16 +38,18 @@
           data-click="stop"
         />
       </div>
-      <div class="controlbar-container">
+      <div class="controlbar-container" data-click='prev'>
         <i
           class="fa fa-step-backward c-f"
           title="L:后退, R:上一个"
+          data-click='prev'
         />
       </div>
-      <div class="controlbar-container">
+      <div class="controlbar-container" data-click='next'>
         <i
           class="fa fa-step-forward c-f"
           title="L:前进, R:下一个"
+          data-click='next'
         />
       </div>
       <div
@@ -61,7 +63,9 @@
         />
       </div>
       <div class="controlbar-container bar-time c-f">
-        时间
+        <span>{{ passTime }}</span>
+        :
+        <span>{{ totalTime }}</span>
       </div>
       <div class="controlbar-container">
         <i
@@ -76,6 +80,7 @@
 <script>
 import electron from 'electron'
 import CeProgress from '../base/progressbar'
+import { formatTime } from '../../utils/index'
 const { dialog, app } = electron.remote
 /**
  * 底部菜单栏，控制板等等
@@ -88,6 +93,14 @@ export default {
     chimee: Object,
     isPlaying: Boolean
   },
+  data () {
+    return {
+      passTime: '00:00',
+      totalTime: '00:00',
+      progressTime: 0,
+      progressVolume: 50
+    }
+  },
   methods: {
     handleFooterBarClick (event) {
       let type = event.target.getAttribute('data-click')
@@ -95,11 +108,27 @@ export default {
         if (type === 'open') this.handleOpenNewFile()
         else if (type === 'play') this.handlePlay()
         else if (type === 'pause') this.handlePlay()
+        else if (type === 'next') this.handleNext()
+        else if (type === 'prev') this.handlePrev()
       }
     },
     handlePlay () {
       if (this.isPlaying) this.chimee.pause()
       else this.chimee.play()
+    },
+    handlePrev () {
+      this.chimee.pause()
+      this.chimee.currentTime -= 2
+      if (this.chimee.currentTime > 0.1) {
+        this.chimee.play()
+      }
+    },
+    handleNext () {
+      this.chimee.pause()
+      this.chimee.currentTime += 2
+      if (this.chimee.currentTime < this.chimee.duration) {
+        this.chimee.play()
+      }
     },
     async handleOpenNewFile () {
       let { filePaths } = await dialog.showOpenDialog({
@@ -116,6 +145,20 @@ export default {
     },
     handleClickVolume (val) {
       this.chimee.volume = val / 100
+    },
+    /**
+     * 视频播放时，timeupdate 事件更新播放时间 和 播放进度条
+     */
+    updatePass () {
+      this.passTime = formatTime(this.chimee.currentTime)
+      this.progressTime = this.chimee.currentTime * 100 / this.chimee.duration
+    },
+    /**
+     * 视频初始化后，更新总时间
+     */
+    updateTotal () {
+      console.log(this.chimee.duration)
+      this.totalTime = formatTime(this.chimee.duration)
     }
   }
 }

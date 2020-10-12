@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { throttle } from 'lodash'
 /**
  * 进度条组件，会用在很多的地方，要注意封装好
  * 1. 排版模式，横竖
@@ -43,11 +44,19 @@ export default {
     color: {
       type: String,
       default: '#FAE100'
+    },
+    /**
+     *进度条的百分数， 浮点数
+     */
+    value: {
+      type: Number,
+      default: 0
     }
   },
   data () {
     return {
-      value: 0
+      barActive: false,
+      throttleMoveBar: throttle(this.handleMoveBar, 100)
     }
   },
   computed: {
@@ -59,28 +68,51 @@ export default {
     /**
      * 三种模式，点击在all，点击在active，点击在wrap，点击在bar
      */
-    value (val) {
-      if (this.$el) {
-        let domAll = this.$el.querySelector('.all')
-        let domActive = this.$el.querySelector('.active')
-        let domBar = this.$el.querySelector('.cevideo-progress-bar')
-        let v
-        if (this.isHori) {
-          let width  = domAll.offsetWidth
-          v = Math.floor(width * val / 100) + 'px'
-          domActive.style.width = v
-          domBar.style.marginLeft =  v
-        } else {
-          let height  = domAll.offsetHeight
-          v = Math.floor(height * val / 100) + 'px'
-          domActive.style.height = v
-          domBar.style.marginBottom =  v
+    value: {
+      handler (val) {
+        if (this.$el) {
+          let domAll = this.$el.querySelector('.all')
+          let domActive = this.$el.querySelector('.active')
+          let domBar = this.$el.querySelector('.cevideo-progress-bar')
+          let v
+          if (this.isHori) {
+            let width  = domAll.offsetWidth
+            v = Math.floor(width * val / 100) + 'px'
+            domActive.style.width = v
+            domBar.style.marginLeft =  v
+          } else {
+            let height  = domAll.offsetHeight
+            v = Math.floor(height * val / 100) + 'px'
+            domActive.style.height = v
+            domBar.style.marginBottom =  v
+          }
         }
-        console.log(v)
-      }
+      },
+      immediate: true
     }
   },
+  mounted () {
+    /**
+     * 关于拖动的思考，有j几种模式
+     * 1. mousedown 时记录bar对应的 clientX，拖动过程中j节流100ms，得到bar的clientX，设置 bar value
+     */
+    this.$refs.bar.addEventListener('mousedown', evt => {
+      this.barActive = true
+    })
+    // 按钮的拖动效果，节流触发，每100ms改变一次效果
+    this.$refs.bar.addEventListener('mousemove', evt => {
+      if (this.barActive) {
+        this.throttleMoveBar(evt)
+      }
+    })
+    window.addEventListener('mouseup', evt => {
+      this.barActive = false
+    })
+  },
   methods: {
+    handleMoveBar (event) {
+      console.log(event.target.offsetLeft)
+    },
     /**
      * 点击进度条事件，抛出一个百分数给外部组件
      */
@@ -90,13 +122,13 @@ export default {
       if (this.mode === 'horizontal') {
         let active = event.offsetX
         let all = this.$refs.all.offsetWidth
-        this.value = active * 100 / all
-        this.$emit('click', this.value)
+        let value = active * 100 / all
+        this.$emit('click', value)
       } else {
         let active = event.offsetY
         let all = this.$refs.all.offsetHeight
-        this.value = active * 100 / all
-        this.$emit('click', this.value)
+        let value = active * 100 / all
+        this.$emit('click', value)
       }
     }
   }

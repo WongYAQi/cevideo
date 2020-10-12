@@ -23,6 +23,7 @@
     "font-awesome": "^4.7.0",
     "less": "^3.12.2",
     "less-loader": "^7.0.1",
+    "lodash": "^4.17.20",
     "mime": "^2.4.6",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",

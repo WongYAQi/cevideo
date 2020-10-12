@@ -6,7 +6,8 @@
       :chimee.sync="chimee"
       ref="play"
     />
-    <my-footer 
+    <my-footer
+      ref='footer'
       :chimee="chimee"
       :is-playing="isPlaying"
       @cevideo-load="load"
@@ -19,6 +20,7 @@
 import MyHeader from './components/business/header'
 import MyPlayer from './components/business/player'
 import MyFooter from './components/business/footer'
+import Chimee from 'chimee'
 import { ipcRenderer } from 'electron'
 import axios from './script/axios'
 export default {
@@ -41,6 +43,10 @@ export default {
      * 通过 ipcRenderer 发送消息到主进程，所以在渲染进程的调试窗口是看不到消息的，只有在主进程的node窗口中才可以看到
      */
   },
+  mounted () {
+    this.init()
+    this.initEvent()
+  },
   watch: {
     chimee (val) {
       if (val) {
@@ -54,6 +60,23 @@ export default {
     }
   },
   methods: {
+    init () {
+      const chimee = new Chimee({
+        wrapper: '#' + this.id,
+        src: 'http://chimee.org/vod/1.mp4',
+        controls: false,
+        autoload: true
+      })
+      this.chimee = chimee
+    },
+    initEvent () {
+      this.chimee.on('timeupdate', evt => {
+        this.$refs.footer.updatePass()
+      })
+      this.chimee.on('durationchange', evt => {
+        this.$refs.footer.updateTotal()
+      })
+    },
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
     },
