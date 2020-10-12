@@ -74,6 +74,7 @@ export default {
         this.$refs.footer.updatePass()
       })
       this.chimee.on('durationchange', evt => {
+        console.log(evt)
         this.$refs.footer.updateTotal()
       })
     },

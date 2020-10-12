@@ -2,7 +2,7 @@
   <div class="footer">
     <div class="row">
       <div>
-        <ce-progress v-model='progressTime' />
+        <ce-progress v-model='progressTime' @click="handleClickPass"  />
       </div>
       <div>
         <div class="volumn">
@@ -145,6 +145,10 @@ export default {
     },
     handleClickVolume (val) {
       this.chimee.volume = val / 100
+      this.progressVolume = val
+    },
+    handleClickPass (val) {
+      this.chimee.currentTime = val * this.chimee.duration / 100
     },
     /**
      * 视频播放时，timeupdate 事件更新播放时间 和 播放进度条
@@ -157,8 +161,8 @@ export default {
      * 视频初始化后，更新总时间
      */
     updateTotal () {
-      console.log(this.chimee.duration)
       this.totalTime = formatTime(this.chimee.duration)
+      this.progressVolume = this.chimee.volume * 100
     }
   }
 }

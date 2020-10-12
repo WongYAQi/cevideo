@@ -69,14 +69,15 @@ app.get('/load', function(req: any, res: any) {
 
 app.get('/info', function (req: any, res: any) {
   const { src } = req.query
-  var ffprobePath = path.join(
+  var ffprobePathDev = path.join(
     __dirname,
-    process.env.NODE_ENV === 'development' ? '../node_modules/ffprobe-static' : '',
+    '../node_modules/ffprobe-static',
     'bin',
     platform,
     arch,
     platform === 'win32' ? 'ffprobe.exe' : 'ffprobe'
   )
+  var ffprobePath = process.env.NODE_ENV === 'development' ? ffprobePathDev : ffprobeStatic
   ffprobe(src, { path: ffprobePath }).then((r: any) => {
     res.send(r)
   })
