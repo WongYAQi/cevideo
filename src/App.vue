@@ -10,8 +10,6 @@
       ref='footer'
       :chimee="chimee"
       :is-playing="isPlaying"
-      @cevideo-load="load"
-      @cevideo-play="play"
     />
   </div>
 </template>
@@ -22,7 +20,6 @@ import MyPlayer from './components/business/player'
 import MyFooter from './components/business/footer'
 import Chimee from 'chimee'
 import { ipcRenderer } from 'electron'
-import axios from './script/axios'
 export default {
   name: 'App',
   components: {
@@ -74,22 +71,11 @@ export default {
         this.$refs.footer.updatePass()
       })
       this.chimee.on('durationchange', evt => {
-        console.log(evt)
         this.$refs.footer.updateTotal()
       })
     },
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
-    },
-    load (paths) {
-      let url = encodeURIComponent(paths[0])
-      axios.get('http://localhost:3000/info?src=' + url)
-      this.chimee.load('http://localhost:3000/load?src=' + url, {
-        volume: 0.5
-      })
-    },
-    play () {
-      this.chimee.play()
     }
   }
 }

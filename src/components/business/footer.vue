@@ -81,6 +81,7 @@
 import electron from 'electron'
 import CeProgress from '../base/progressbar'
 import { formatTime } from '../../utils/index'
+import axios from '../../script/axios'
 const { dialog, app } = electron.remote
 /**
  * 底部菜单栏，控制板等等
@@ -140,7 +141,10 @@ export default {
         ]
       })
       if (filePaths.length) {
-        this.$emit('cevideo-load', filePaths)
+        let url = encodeURIComponent(filePaths[0])
+        this.chimee.load('http://localhost:3000/load?src=' + url, {
+          volume: 0.5
+        })
       }
     },
     handleClickVolume (val) {
