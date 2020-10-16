@@ -16,4 +16,13 @@ export default function (win: BrowserWindow) {
       win.webContents.send('TitleBar', 'unmaximize')
     }
   })
+  ipcMain.on('msg_showList', (event, arg) => {
+    let res = win.getSize()
+    let [width, height] = res
+    if (arg) {
+      win.setSize(width + 300, height)
+    } else {
+      win.setSize(width - 300, height)
+    }
+  })
 }

@@ -83,4 +83,26 @@ app.get('/info', function (req: any, res: any) {
   })
 })
 
+/**
+ * 获取文件夹信息
+ * @return 返回视频相关的文件
+ */
+app.get('/stat', function (req: any, res: any) {
+  let { src } = req.query
+  fs.readdir(src, { withFileType: true }, function (err, files) {
+    console.log(files)
+    Promise.all(files.forEach(name => {
+      return new Promise((resolve, reject) => {
+        fs.stat(path.resolve(src, name), function (err, stat) {
+          if (err) resolve(err)
+          else resolve(stat)
+        })
+      })
+    })).then((response) => {
+      res.send(response)
+    }).catch(error => {
+      console.log(error)
+    })
+  })
+})
 export default app

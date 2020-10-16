@@ -1,16 +1,26 @@
 <template>
   <div id="app">
-    <my-header />
-    <my-player
-      :id="id"
-      :chimee.sync="chimee"
-      ref="play"
-    />
-    <my-footer
-      ref='footer'
-      :chimee="chimee"
-      :is-playing="isPlaying"
-    />
+    <div class='app-header'>
+      <my-header />
+    </div>
+    <div class='app-main'>
+      <div class='app-left'>
+        <my-player
+          :id="id"
+          :chimee.sync="chimee"
+          ref="play"
+        />
+        <my-footer
+          ref='footer'
+          :chimee="chimee"
+          :is-playing="isPlaying"
+          :is-list-active.sync='isListActive'
+        />
+      </div>
+      <div class='app-right' v-if='isListActive'>
+        <my-list />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -18,18 +28,21 @@
 import MyHeader from './components/business/header'
 import MyPlayer from './components/business/player'
 import MyFooter from './components/business/footer'
+import MyList from './components/business/list'
 import Chimee from 'chimee'
+import axios from './script/axios'
 import { ipcRenderer } from 'electron'
 export default {
   name: 'App',
   components: {
-    MyHeader, MyPlayer, MyFooter
+    MyHeader, MyPlayer, MyFooter, MyList
   },
   data () {
     return {
       chimee: {},
       id: 'player',
-      isPlaying: false
+      isPlaying: false,
+      isListActive: false
     }
   },
   created () {
@@ -54,6 +67,14 @@ export default {
           this.isPlaying = false
         })
       }
+    },
+    /**
+     * 每次显示列表时，需要通知主进程宽度增加300px
+     * 因为 app 的高宽用的vh,vw
+     */
+    isListActive (val) {
+      this.loadDirectory()
+      ipcRenderer.send('msg_showList', val)
     }
   },
   methods: {
@@ -76,6 +97,9 @@ export default {
     },
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
+    },
+    loadDirectory () {
+      axios.get('http://localhost:3000/stat?src=' + encodeURIComponent('D:\\'))
     }
   }
 }
@@ -98,12 +122,26 @@ html, body{
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  & > .header,
-  & > .footer{
+  & > .app-header{
     flex: 0 1 auto;
   }
-  & > .player{
+  & > .app-main{
     flex: 1;
+    display: flex;
+    & > .app-left{
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      & > .player{
+        flex: 1;
+      }
+      & > .footer{
+        flex: 0 1 auto;
+      }
+    }
+    & > .app-right{
+      flex: 0 1 auto;
+    }
   }
 }
 </style>

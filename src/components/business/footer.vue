@@ -67,10 +67,11 @@
         :
         <span>{{ totalTime }}</span>
       </div>
-      <div class="controlbar-container">
+      <div class="controlbar-container" data-click='list'>
         <i
           class="fa fa-bars c-f"
           title="打开播放列表"
+          data-click='list'
         />
       </div>
     </div>
@@ -92,7 +93,8 @@ export default {
   },
   props: {
     chimee: Object,
-    isPlaying: Boolean
+    isPlaying: Boolean,
+    isListActive: Boolean
   },
   data () {
     return {
@@ -111,6 +113,7 @@ export default {
         else if (type === 'pause') this.handlePlay()
         else if (type === 'next') this.handleNext()
         else if (type === 'prev') this.handlePrev()
+        else if (type === 'list') this.handleShowList()
       }
     },
     handlePlay () {
@@ -153,6 +156,9 @@ export default {
     },
     handleClickPass (val) {
       this.chimee.currentTime = val * this.chimee.duration / 100
+    },
+    handleShowList () {
+      this.$emit('update:isListActive', !this.isListActive)
     },
     /**
      * 视频播放时，timeupdate 事件更新播放时间 和 播放进度条
