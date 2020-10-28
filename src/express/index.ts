@@ -2,11 +2,12 @@
  * Express 服务器
  */
 
+import { Request, Response } from 'express'
+import fs from 'fs'
 process.env.FLUENTFFMPEG_COV = ''
 
 const express = require('express')
 const app = express()
-const fs = require('fs')
 const mime = require('mime')
 const cors = require('cors')
 const ffprobe = require('ffprobe')
@@ -87,22 +88,49 @@ app.get('/info', function (req: any, res: any) {
  * 获取文件夹信息
  * @return 返回视频相关的文件
  */
-app.get('/stat', function (req: any, res: any) {
-  let { src } = req.query
-  fs.readdir(src, { withFileType: true }, function (err, files) {
-    console.log(files)
-    Promise.all(files.forEach(name => {
-      return new Promise((resolve, reject) => {
-        fs.stat(path.resolve(src, name), function (err, stat) {
-          if (err) resolve(err)
-          else resolve(stat)
-        })
+app.get('/stat', function (req: Request, res: Response) {
+  let src = req.query.src as string | undefined
+  const filterFolder = ['$RECYCLE.BIN', 'System Volume Information']
+  const suffix = ['.mp4']
+  if (!src) res.send('请输入参数 src')
+  else {
+    fs.readdir(src, { withFileTypes: true }, function (err, files) {
+      if (err) {
+        res.send(err)
+      }
+      let r: { name: string, type: 'file' | 'directory' }[] = []
+      r = files.filter(o => !filterFolder.includes(o.name))
+        .filter(o => o.isDirectory() || suffix.some(t => o.name.endsWith(t)))
+        .map(o => ({
+          name: o.name,
+          type: o.isFile() ? 'file' : 'directory'
+        }))
+      r = r.sort((a, b) => {
+        return a.type.charCodeAt(0) - b.type.charCodeAt(0)
+          || a.name.charCodeAt(0) - b.name.charCodeAt(0)
       })
-    })).then((response) => {
-      res.send(response)
-    }).catch(error => {
-      console.log(error)
+      r.unshift({ name: '..', type: 'directory' })
+      res.send(r)
     })
+  }
+})
+
+app.get('/root', function (req: Request, res: Response) {
+  let promises = []
+  for (let i=65;i<=90;i++){
+    let v = String.fromCharCode(i) + ':\\'
+    promises.push(new Promise((resolve, reject) => {
+      fs.readdir(v, function(err, files) {
+        resolve(!err ? v : '')
+      })
+    }))
+  }
+  Promise.all(promises).then(r => {
+    res.send(r.filter(o => o !== '').map(o => ({
+      type: 'directory',
+      name: o
+    })))
   })
 })
+
 export default app

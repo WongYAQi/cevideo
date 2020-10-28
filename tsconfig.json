@@ -14,8 +14,7 @@
     "baseUrl": ".",
     "types": [
       "webpack-env",
-      "node",
-      "express"
+      "node"
     ],
     "paths": {
       "@/*": [
@@ -34,7 +33,8 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "node_modules/@types/express/index.d.ts"
   ],
   "exclude": [
     "node_modules"

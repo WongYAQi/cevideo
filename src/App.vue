@@ -18,7 +18,7 @@
         />
       </div>
       <div class='app-right' v-if='isListActive'>
-        <my-list />
+        <my-list :chimee='chimee' />
       </div>
     </div>
   </div>
@@ -73,7 +73,6 @@ export default {
      * 因为 app 的高宽用的vh,vw
      */
     isListActive (val) {
-      this.loadDirectory()
       ipcRenderer.send('msg_showList', val)
     }
   },
@@ -97,15 +96,16 @@ export default {
     },
     createWindow () {
       ipcRenderer.send('msg_render2main', { name: '123' }, { name: '222' })
-    },
-    loadDirectory () {
-      axios.get('http://localhost:3000/stat?src=' + encodeURIComponent('D:\\'))
     }
   }
 }
 </script>
 
 <style lang='less'>
+*{
+  margin: 0;
+  padding: 0;
+}
 html, body{
   margin: 0;
   padding: 0;
@@ -122,10 +122,12 @@ html, body{
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   & > .app-header{
     flex: 0 1 auto;
   }
   & > .app-main{
+    height: calc(100vh - 35px);
     flex: 1;
     display: flex;
     & > .app-left{
